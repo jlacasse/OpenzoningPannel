@@ -36,12 +36,12 @@ try:
 except:
   pass
 
-"""
-Define these variables here or in therm_auth.py
+#"""
+#Define these variables here or in therm_auth.py
 USERNAME="johny.lacasse2@videotron.ca"
 PASSWORD="H0n3yw3!!Lh87611443"
 DEVICE_ID=1606
-"""
+#"""
 
 LOGFILENAME="/home/bkg/log/therm.log"
 stdlog=None
