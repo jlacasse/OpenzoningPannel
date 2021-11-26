@@ -387,15 +387,15 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
 	#print "CANCELHOLD"
     else:
 	#print "SETPOINT"
-        #rawj=json.dumps(cool2Hold)
-	cool2["CoolSetpoint"] = float(setcool)
-	cool2["StatusCool"] = 1
-        cool2["CoolNextPeriod"]=t2code
-	cool2["HeatSetpoint"] = float(setcool-10)
-	cool2["StatusHeat"] = 1
-        cool2["HeatNextPeriod"]=t2code
-        rawj=json.dumps(cool2)
-    conn = httplib.HTTPSConnection("mytotalconnectcomfort.com");
+        #rawj=json.dumps(cool2Hold) 
+      cool2["CoolSetpoint"] = float(setcool)
+      cool2["StatusCool"] = 1
+      cool2["CoolNextPeriod"]=t2code
+      cool2["HeatSetpoint"] = float(setcool-10)
+      cool2["StatusHeat"] = 1
+      cool2["HeatNextPeriod"]=t2code
+      rawj=json.dumps(cool2)
+      conn = httplib.HTTPSConnection("mytotalconnectcomfort.com");
     #conn.set_debuglevel(999);
     print ("R4 will send")
     print (rawj)
@@ -403,7 +403,6 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     r4 = conn.getresponse()
     if (r4.status != 200): 
       log("Error Didn't get 200 status on R4 status={0} {1}".format(r4.status,r4.reason))
-      return
     else:
       print ("R4 got 200")
     #print r4.read()
