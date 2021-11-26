@@ -7,8 +7,8 @@
 # Thermostat controller
 # sudo nohup /usr/bin/python /home/bkg/therm.py /dev/input/ttyACM0 > /home/bkg/public_html/therm.out
 
-import urllib.request, urllib.error, urllib.parse
-import urllib.request, urllib.parse, urllib.error
+import urllib2
+import urllib
 import json
 import datetime
 import re
@@ -16,7 +16,7 @@ import time
 import math
 import base64
 import time
-import http.client
+import httplib
 import sys
 import tty,termios
 import getopt
@@ -38,9 +38,9 @@ except:
 
 """
 Define these variables here or in therm_auth.py
-USERNAME="johny.lacasse2@videotron.ca"
-PASSWORD="H0n3yw3!!Lh87611443"
-DEVICE_ID=1606
+USERNAME="<<INSERT USERNAME HERE>>"
+PASSWORD="<<INSERT PASSWORD HERE>>"
+DEVICE_ID=<<INSERT DEVICE ID HERE>>
 """
 
 LOGFILENAME="/home/bkg/log/therm.log"
@@ -87,7 +87,7 @@ def status(ex,argv0):
     if (params.__len__() >= 2):
       if (params[0] == ex) and (params[1] == argv0):
         if (os.getpid() != int(args[0])):
-          print(("Running on PID",args[0]))
+          print ("Running on PID",args[0])
 
 def killall(ex,argv0):
   p=subprocess.Popen(["ps","-e","--format","%p,%c,%a"],stdout=subprocess.PIPE)
@@ -100,7 +100,7 @@ def killall(ex,argv0):
     if (params.__len__() >= 2):
       if (params[0] == ex) and (params[1] == argv0):
         if (os.getpid() != int(args[0])):
-          print(("Killing PID",args[0]))
+          print ("Killing PID",args[0])
           subprocess.Popen(['kill',args[0]]).wait()
 
 def log(*strings):
@@ -116,7 +116,7 @@ def log(*strings):
     stdlog.write(st)
     stdlog.flush()
   except Exeption as e:
-    print(("Error writing to stdlog ",e))
+    print ("Error writing to stdlog ",e)
 
 # Returns character or None on error. Error should WAIT then retry
 def init_tty(ttydev):
@@ -153,7 +153,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     cookiejar=None
     print()
     print()
-    print(("Run at ",datetime.datetime.now()))
+    print ("Run at ",datetime.datetime.now())
     headers={"Content-Type":"application/x-www-form-urlencoded",
             "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Encoding":"sdch",
@@ -162,7 +162,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
             "Origin":"https://mytotalconnectcomfort.com/portal",
             "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36"
         }
-    conn = http.client.HTTPSConnection("mytotalconnectcomfort.com")
+    conn = httplib.HTTPSConnection("mytotalconnectcomfort.com")
     conn.request("GET", "/portal/",None,headers)
     r0 = conn.getresponse()
     #print (r0.status, r0.reason)
@@ -176,7 +176,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     location = r0.getheader("Location")
 
     retries=5
-    params=urllib.parse.urlencode({"timeOffset":"240",
+    params=urllib.urlencode({"timeOffset":"240",
         "UserName":USERNAME,
         "Password":PASSWORD,
         "RememberMe":"false"})
@@ -192,7 +192,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
             "Cookie":newcookie,
             "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36"
         }
-    conn = http.client.HTTPSConnection("mytotalconnectcomfort.com")
+    conn = httplib.HTTPSConnection("mytotalconnectcomfort.com")
     conn.request("POST", "/portal/",params,headers)
     r1 = conn.getresponse()
     #print r1.status, r1.reason
@@ -233,7 +233,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     t = datetime.datetime.now()
     utc_seconds = (time.mktime(t.timetuple()))
     utc_seconds = int(utc_seconds*1000)
-    print(("Code ",code))
+    print ("Code ",code)
 
     location="/portal/Device/CheckDataSession/"+code+"?_="+str(utc_seconds)
     #print "THIRD"
@@ -251,9 +251,9 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
             "User-Agent":"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/28.0.1500.95 Safari/537.36",
             "Cookie":cookie
         }
-    conn = http.client.HTTPSConnection("mytotalconnectcomfort.com")
+    conn = httplib.HTTPSConnection("mytotalconnectcomfort.com")
     #conn.set_debuglevel(999);
-    print(("LOCATION R3 is",location))
+    print ("LOCATION R3 is",location)
     conn.request("GET", location,None,headers)
     r3 = conn.getresponse()
     if (r3.status != 200):
@@ -266,13 +266,13 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     #print "R3 Dump"
     #print json.dumps(j,indent=2)
     #print json.dumps(j,sort_keys=True,indent=4, separators=(',', ': '))
-    print(("Success",j['success']))
-    print(("Live",j['deviceLive']))
-    print(("CurrentTemp",j['latestData']['uiData']["DispTemperature"]))
-    print(("CoolSetponit",j['latestData']['uiData']["CoolSetpoint"]))
-    print(("HoldUntil",j['latestData']['uiData']["TemporaryHoldUntilTime"]))
-    print(("StatusCool",j['latestData']['uiData']["StatusCool"]))
-    print(("StatusHeat",j['latestData']['uiData']["StatusHeat"]))
+    print ("Success",j['success'])
+    print ("Live",j['deviceLive'])
+    print ("CurrentTemp",j['latestData']['uiData']["DispTemperature"])
+    print ("CoolSetponit",j['latestData']['uiData']["CoolSetpoint"])
+    print ("HoldUntil",j['latestData']['uiData']["TemporaryHoldUntilTime"])
+    print ("StatusCool",j['latestData']['uiData']["StatusCool"])
+    print ("StatusHeat",j['latestData']['uiData']["StatusHeat"])
     
     if (queryOnly != None):
       return
@@ -299,7 +299,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     if (raiseHold): holdtime=6
     t2code = ((t.hour+holdtime)%24) * 60 + t.minute
     t2code = t2code/15
-    print(("Current time code",tcode,"2-hours",t2code))
+    print ("Current time code",tcode,"2-hours",t2code)
     cancelHold= {
         "CoolNextPeriod": None,
         "CoolSetpoint": 75.0,
@@ -395,7 +395,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
       cool2["StatusHeat"] = 1
       cool2["HeatNextPeriod"]=t2code
       rawj=json.dumps(cool2)
-      conn = http.client.HTTPSConnection("mytotalconnectcomfort.com");
+      conn = httplib.HTTPSConnection("mytotalconnectcomfort.com");
     #conn.set_debuglevel(999);
     print ("R4 will send")
     print (rawj)
@@ -486,7 +486,7 @@ args=[]
 try:
     opts,args=getopt.getopt(sys.argv[1:],"bskl:drpqP:U:D:")
 except getopt.GetoptError as err:
-    print((str(err)))
+    print (str(err))
     usage()
     sys.exit(2)
 
