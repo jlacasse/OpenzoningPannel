@@ -65,7 +65,7 @@ def client_cookies(cookiestr,container):
         k=None
         v=None
     if k: 
-      #print k,v
+      #print (k,v)
       container[k]=v
   return container
 
@@ -87,7 +87,7 @@ def status(ex,argv0):
     if (params.__len__() >= 2):
       if (params[0] == ex) and (params[1] == argv0):
         if (os.getpid() != int(args[0])):
-          print "Running on PID",args[0]
+          print ("Running on PID",args[0])
 
 def killall(ex,argv0):
   p=subprocess.Popen(["ps","-e","--format","%p,%c,%a"],stdout=subprocess.PIPE)
@@ -100,7 +100,7 @@ def killall(ex,argv0):
     if (params.__len__() >= 2):
       if (params[0] == ex) and (params[1] == argv0):
         if (os.getpid() != int(args[0])):
-          print "Killing PID",args[0]
+          print ("Killing PID",args[0])
           subprocess.Popen(['kill',args[0]]).wait()
 
 def log(*strings):
@@ -109,14 +109,14 @@ def log(*strings):
   st = str(datetime.datetime.now().strftime("%c"))
   st += " "
   st += string
-  print st
+  print (st)
   st += "\n"
   if not stdlog: return
   try:
     stdlog.write(st)
     stdlog.flush()
   except Exeption as e:
-    print "Error writing to stdlog ",e
+    print ("Error writing to stdlog ",e)
 
 # Returns character or None on error. Error should WAIT then retry
 def init_tty(ttydev):
@@ -125,7 +125,7 @@ def init_tty(ttydev):
     return
   mode  = os.stat(ttydev).st_mode
   if (not stat.S_ISCHR(mode)):
-      raise ttydev,"is not a character device"
+      raise ttydev("is not a character device")
 
   try:
       log ("Opening ",ttydev)
@@ -151,9 +151,9 @@ def getch(ttydev):
 def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     
     cookiejar=None
-    print
-    print
-    print "Run at ",datetime.datetime.now()
+    print()
+    print()
+    print ("Run at ",datetime.datetime.now())
     headers={"Content-Type":"application/x-www-form-urlencoded",
             "Accept":"text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
             "Accept-Encoding":"sdch",
@@ -165,11 +165,11 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     conn = httplib.HTTPSConnection("mytotalconnectcomfort.com")
     conn.request("GET", "/portal/",None,headers)
     r0 = conn.getresponse()
-    #print r0.status, r0.reason
+    #print (r0.status, r0.reason)
     
     for x in r0.getheaders():
       (n,v) = x
-      #print "R0 HEADER",n,v
+      #print ("R0 HEADER",n,v)
       if (n.lower() == "set-cookie"): 
         cookiejar=client_cookies(v,cookiejar)
     #cookiejar = r0.getheader("Set-Cookie")
@@ -233,7 +233,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     t = datetime.datetime.now()
     utc_seconds = (time.mktime(t.timetuple()))
     utc_seconds = int(utc_seconds*1000)
-    print "Code ",code
+    print ("Code ",code)
 
     location="/portal/Device/CheckDataSession/"+code+"?_="+str(utc_seconds)
     #print "THIRD"
@@ -253,7 +253,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
         }
     conn = httplib.HTTPSConnection("mytotalconnectcomfort.com")
     #conn.set_debuglevel(999);
-    print "LOCATION R3 is",location
+    print ("LOCATION R3 is",location)
     conn.request("GET", location,None,headers)
     r3 = conn.getresponse()
     if (r3.status != 200):
@@ -266,13 +266,13 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     #print "R3 Dump"
     #print json.dumps(j,indent=2)
     #print json.dumps(j,sort_keys=True,indent=4, separators=(',', ': '))
-    print "Success",j['success']
-    print "Live",j['deviceLive']
-    print "CurrentTemp",j['latestData']['uiData']["DispTemperature"]
-    print "CoolSetponit",j['latestData']['uiData']["CoolSetpoint"]
-    print "HoldUntil",j['latestData']['uiData']["TemporaryHoldUntilTime"]
-    print "StatusCool",j['latestData']['uiData']["StatusCool"]
-    print "StatusHeat",j['latestData']['uiData']["StatusHeat"]
+    print ("Success",j['success'])
+    print ("Live",j['deviceLive'])
+    print ("CurrentTemp",j['latestData']['uiData']["DispTemperature"])
+    print ("CoolSetponit",j['latestData']['uiData']["CoolSetpoint"])
+    print ("HoldUntil",j['latestData']['uiData']["TemporaryHoldUntilTime"])
+    print ("StatusCool",j['latestData']['uiData']["StatusCool"])
+    print ("StatusHeat",j['latestData']['uiData']["StatusHeat"])
     
     if (queryOnly != None):
       return
@@ -299,7 +299,7 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
     if (raiseHold): holdtime=6
     t2code = ((t.hour+holdtime)%24) * 60 + t.minute
     t2code = t2code/15
-    print "Current time code",tcode,"2-hours",t2code
+    print ("Current time code",tcode,"2-hours",t2code)
     cancelHold= {
         "CoolNextPeriod": None,
         "CoolSetpoint": 75.0,
@@ -361,16 +361,16 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
         log( "Not Changing")
         return
     """
-    print 
-    print 
-    print rawj
-    print 
-    print 
-    print "Location",location
+    print ()
+    print ()
+    print (rawj)
+    print ()
+    print ()
+    print ("Location",location)
     for (k,v) in headers.iteritems():
-        print k,v
-    print 
-    print 
+        print (k,v)
+    print ()
+    print ()
 """
 
     if (raiseHold):
@@ -397,15 +397,15 @@ def get_login(queryOnly=None,raiseHold=None,dontChange=None,runProgram=None):
         rawj=json.dumps(cool2)
     conn = httplib.HTTPSConnection("mytotalconnectcomfort.com");
     #conn.set_debuglevel(999);
-    print "R4 will send"
-    print rawj
+    print ("R4 will send")
+    print (rawj)
     conn.request("POST", location,rawj,headers)
     r4 = conn.getresponse()
     if (r4.status != 200): 
       log("Error Didn't get 200 status on R4 status={0} {1}".format(r4.status,r4.reason))
       return
     else:
-      print "R4 got 200"
+      print ("R4 got 200")
     #print r4.read()
 
 """
@@ -453,7 +453,7 @@ Request Payloadview source
 """
 
 def usage():
-    print """
+    print ("""
     therm [optons] [ttydev]
     Options:
         -d            Don really do anyththing
@@ -475,7 +475,7 @@ def usage():
     C    Change Coolpoint
     r    Raise and hold temperature
     p    Run normal program (cancel holds)
-    """
+    """)
 
 dontChange=None
 raiseHold=None
@@ -487,7 +487,7 @@ args=[]
 try:
     opts,args=getopt.getopt(sys.argv[1:],"bskl:drpqP:U:D:")
 except getopt.GetoptError as err:
-    print str(err)
+    print (str(err))
     usage()
     sys.exit(2)
 
@@ -518,7 +518,7 @@ for o,a in opts:
         LOGFILENAME=int(a)
 
 if ((USERNAME == None) or (USERNAME=="") or (PASSWORD == None) or (PASSWORD == "") or (DEVICE_ID ==0)):
-  print "User credentials not specified"
+  print ("User credentials not specified")
   exit(1)
 
 
