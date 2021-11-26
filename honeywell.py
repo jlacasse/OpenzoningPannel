@@ -521,8 +521,8 @@ if ((USERNAME == None) or (USERNAME=="") or (PASSWORD == None) or (PASSWORD == "
   exit(1)
 
 
-if (LOGFILENAME):
-    stdlog=open(LOGFILENAME,"a")
+#if (LOGFILENAME):
+#    stdlog=open(LOGFILENAME,"a")
 
 if (raiseHold):
     log ("Non-Interactive raiseHold request")
