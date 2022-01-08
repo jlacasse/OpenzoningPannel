@@ -28,7 +28,7 @@ for pin in range(0, 16):
     pinsMcp1.append(mcp1.get_pin(pin))
 pinsMcp2 = []
 for pin in range(0, 16):
-    pinsMcp2.append(mcp2.get_pin(pin))
+    pinsMcp2.append(mcp1.get_pin(pin))
 
 # Set all the pins to input
 for pin in pinsMcp1:
@@ -55,24 +55,33 @@ mcp2.clear_ints()  # Interrupts need to be cleared initially
 # mcp.default_value = 0xFFFF         # default value is 'high' so notify whenever 'low'
 
 
-def print_interrupt(port):
+def print_interruptMcp1(port):
     """Callback function to be called when an Interrupt occurs."""
     for pin_flag in mcp1.int_flag:
-        print("Interrupt connected to Pin: {}".format(port))
+        print("Interrupt connected to mcp1 Pin: {}".format(port))
         print("Pin number: {} changed to: {}".format(pin_flag, pinsMcp1[pin_flag].value))
     mcp1.clear_ints()
+
+def print_interruptMcp2(port):
+    """Callback function to be called when an Interrupt occurs."""
+    for pin_flag in mcp2.int_flag:
+        print("Interrupt connected to mcp2 Pin: {}".format(port))
+        print("Pin number: {} changed to: {}".format(pin_flag, pinsMcp2[pin_flag].value))
+    mcp2.clear_ints()
 
 
 # connect either interrupt pin to the Raspberry pi's pin 17.
 # They were previously configured as mirrored.
 GPIO.setmode(GPIO.BCM)
-interrupt = 18
-GPIO.setup(interrupt, GPIO.IN, GPIO.PUD_UP)  # Set up Pi's pin as input, pull up
+interruptMcp1 = 18
+GPIO.setup(interruptMcp1, GPIO.IN, GPIO.PUD_UP)  # Set up Pi's pin as input, pull up
+interruptMcp2 = 17
+GPIO.setup(interruptMcp2, GPIO.IN, GPIO.PUD_UP)  # Set up Pi's pin as input, pull up
 
 # The add_event_detect fuction will call our print_interrupt callback function
 # every time an interrupt gets triggered.
-GPIO.add_event_detect(interrupt, GPIO.FALLING, callback=print_interrupt, bouncetime=20)
-
+GPIO.add_event_detect(interruptMcp1, GPIO.FALLING, callback=print_interruptMcp1, bouncetime=20)
+GPIO.add_event_detect(interruptMcp2, GPIO.FALLING, callback=print_interruptMcp2, bouncetime=20)
 # The following lines are so the program runs for at least 60 seconds,
 # during that time it will detect any pin interrupt and print out the pin number
 # that changed state and its current state.
@@ -80,7 +89,9 @@ GPIO.add_event_detect(interrupt, GPIO.FALLING, callback=print_interrupt, bouncet
 # terminates it will always run GPIO.cleanup().
 try:
     print("When button is pressed you'll see a message")
-    sleep(200)  # You could run your main while loop here.
-    print("Time's up. Finished!")
+    while(True):
+      sleep(5)
+      mcp1.clear_ints()  # Interrupts need to be cleared initially
+      mcp2.clear_ints()  # Interrupts need to be cleared initially
 finally:
     GPIO.cleanup()
