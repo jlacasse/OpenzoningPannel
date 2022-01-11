@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2017 Tony DiCola for Adafruit Industries
-#
+#https://github.com/adafruit/Adafruit_CircuitPython_MCP230xx/blob/main/examples/mcp230xx_event_detect_interrupt.py
 # SPDX-License-Identifier: MIT
 
 from time import sleep

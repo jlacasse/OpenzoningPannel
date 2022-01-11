@@ -40,6 +40,7 @@ pin9 = mcp.get_pin(9)
 # Setup pin0 as an output that's at a high logic level.
 pin9.switch_to_output(value=False)
 
+
 # Setup pin1 as an input with a pull-up resistor enabled.  Notice you can also
 # use properties to change this state.
 pin8.direction = digitalio.Direction.INPUT
