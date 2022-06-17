@@ -13,10 +13,6 @@ from RPi import GPIO
 from adafruit_mcp230xx.mcp23017 import MCP23017
 from datetime import datetime
 
-
-
-
-
 # Initialize the I2C bus:
 i2c = busio.I2C(board.SCL, board.SDA)
 bus = smbus.SMBus(1)
@@ -26,6 +22,9 @@ print("init mcp address")
 mcp1 = MCP23017(i2c, address=0x20)
 mcp2 = MCP23017(i2c, address=0x21)
 mcp3 = MCP23017(i2c, address=0x22)
+mcp4 = MCP23017(i2c, address=0x23)
+mcp5 = MCP23017(i2c, address=0x24)
+mcp6 = MCP23017(i2c, address=0x25)
 
 # address_map = {
 #     0x00: 'IODIRA',   0x01: 'IODIRB',   0x02: 'IPOLA',   0x03: 'IPOLB',
@@ -64,7 +63,18 @@ pinsMcp3 = []
 for pin in range(0, 16):
     pinsMcp3.append(mcp3.get_pin(pin))
     print("mcp3 Pin: {}".format(pin))
-
+pinsMcp4 = []
+for pin in range(0, 16):
+    pinsMcp4.append(mcp4.get_pin(pin))
+    print("mcp4 Pin: {}".format(pin))
+pinsMcp5 = []
+for pin in range(0, 16):
+    pinsMcp5.append(mcp5.get_pin(pin))
+    print("mcp5 Pin: {}".format(pin))
+pinsMcp6 = []
+for pin in range(0, 16):
+    pinsMcp6.append(mcp6.get_pin(pin))
+    print("mcp6 Pin: {}".format(pin))
 # Set all the pins to input
 for pin in pinsMcp1:
     pin.direction = Direction.INPUT
@@ -73,23 +83,42 @@ for pin in pinsMcp1:
 for pin in pinsMcp2:
     pin.direction = Direction.INPUT
     pin.pull = Pull.UP
-    print("mcp1 Pin {} config: direction: {} Pull: {}".format(pin, pin.direction, pin.pull))
-# Set all the pins to output
+    print("mcp2 Pin {} config: direction: {} Pull: {}".format(pin, pin.direction, pin.pull))
 for pin in pinsMcp3:
+    pin.direction = Direction.INPUT
+    pin.pull = Pull.UP
+    print("mcp3 Pin {} config: direction: {} Pull: {}".format(pin, pin.direction, pin.pull))
+for pin in pinsMcp4:
+    pin.direction = Direction.INPUT
+    pin.pull = Pull.UP
+    print("mcp4 Pin {} config: direction: {} Pull: {}".format(pin, pin.direction, pin.pull))
+# Set all the pins to output
+for pin in pinsMcp5:
     pin.direction = Direction.OUTPUT
-    print("mcp1 Pin {} config: direction: {}".format(pin, pin.direction))
-       
+    print("mcp5 Pin {} config: direction: {}".format(pin, pin.direction))
+for pin in pinsMcp6:
+    pin.direction = Direction.OUTPUT
+    print("mcp6 Pin {} config: direction: {}".format(pin, pin.direction))
+
 # Set up to check all the port B pins (pins 8-15) w/interrupts!
 mcp1.interrupt_enable = 0xFFFF  # Enable Interrupts in all mcp1 pins
-mcp2.interrupt_enable = 0xFFFF  # Enable Interrupts in all mcp2 pins 
+mcp2.interrupt_enable = 0xFFFF  # Enable Interrupts in all mcp2 pins
+mcp3.interrupt_enable = 0xFFFF  # Enable Interrupts in all mcp1 pins
+mcp4.interrupt_enable = 0xFFFF  # Enable Interrupts in all mcp2 pins
 # If intcon is set to 0's we will get interrupts on
 # both button presses and button releases
 mcp1.interrupt_configuration = 0x0000  # interrupt on any change
 mcp2.interrupt_configuration = 0x0000  # interrupt on any change
+mcp3.interrupt_configuration = 0x0000  # interrupt on any change
+mcp4.interrupt_configuration = 0x0000  # interrupt on any change
 mcp1.io_control = 0b01100000 #0x44  # Interrupt as open drain and mirrored
 mcp2.io_control = 0b01100000 #0x44  # Interrupt as open drain and mirrored
+mcp3.io_control = 0b01100000 #0x44  # Interrupt as open drain and mirrored
+mcp4.io_control = 0b01100000 #0x44  # Interrupt as open drain and mirrored
 mcp1.clear_ints()  # Interrupts need to be cleared initially
 mcp2.clear_ints()  # Interrupts need to be cleared initially
+mcp3.clear_ints()  # Interrupts need to be cleared initially
+mcp4.clear_ints()  # Interrupts need to be cleared initially
 # Or, we can ask to be notified CONTINUOUSLY if a pin goes LOW (button press)
 # we won't get an IRQ pulse when the pin is HIGH!
 # mcp.interrupt_configuration = 0xFFFF         # notify pin value
@@ -138,7 +167,7 @@ def print_interrupt(port):
 # connect either interrupt pin to the Raspberry pi's pin 18.
 # They were previously configured as mirrored.
 GPIO.setmode(GPIO.BCM)
-interrupt = 18
+interrupt = 12
 GPIO.setup(interrupt, GPIO.IN, GPIO.PUD_UP)  # Set up Pi's pin as input, pull up
 #GPIO.setup(17, GPIO.OUT)
 # The add_event_detect fuction will call our print_interrupt callback function
