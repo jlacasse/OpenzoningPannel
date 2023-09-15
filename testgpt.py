@@ -6,7 +6,7 @@ import smbus
 import time
 
 bus = smbus.SMBus(1)
-address = 0x20
+address = 0x21
 
 def read_all():
     for i in range(0, 22):
@@ -14,3 +14,4 @@ def read_all():
         time.sleep(0.1)
         
 read_all()
+
