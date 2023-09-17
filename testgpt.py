@@ -1,21 +1,4 @@
-# create function to read all mcp2317 registers
-# 2018-05-05
-# Version 1.0
-
-# import smbus
-# import time
-
-# bus = smbus.SMBus(1)
-# address = 0x21
-
-# def read_all():
-#     for i in range(0, 22):
-#         print("Register: ", i, " Value: ", bus.read_byte_data(address, i))
-#         time.sleep(0.1)
-        
-# read_all()
-
-# create function to read all pin (as input ) on mcp2317 at address 0x22
+# function to read all mcp2317 registers
 # 2018-05-05
 # Version 1.0
 
@@ -23,12 +6,12 @@ import smbus
 import time
 
 bus = smbus.SMBus(1)
-address = 0x22
+address = 0x21
 
-def read_all():
+def read_all_registry():
     for i in range(0, 22):
-        print("Pin: ", i, " Value: ", bus.read_byte_data(address, i))
+        print("Register: ", i, " Value: ", bus.read_byte_data(address, i))
         time.sleep(0.1)
         
-read_all()
+read_all_registry()
 
