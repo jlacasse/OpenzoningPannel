@@ -1,0 +1,10 @@
+from pannel_utility import *
+print(define_system_fan_status())
+print("le thermostat th1 est en mode: " + define_th_mode("th1"))
+print("le thermostat th2 est en mode: " + define_th_mode("th2"))
+print("le thermostat th3 est en mode: " + define_th_mode("th3"))
+print("le thermostat th4 est en mode: " + define_th_mode("th4"))
+print("le thermostat th5 est en mode: " + define_th_mode("th5"))
+print("le thermostat th6 est en mode: " + define_th_mode("th6"))
+print("le thermostat th7 est en mode: " + define_th_mode("th7"))
+print("le thermostat th8 est en mode: " + define_th_mode("th8"))
